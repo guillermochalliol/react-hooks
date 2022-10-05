@@ -1,70 +1,86 @@
-# Getting Started with Create React App
+# React Hooks
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[Hooks](https://reactjs.org/docs/hooks-intro.html) are a new addition in React 16.8. They let you use state and other React features without writing a class.
 
-## Available Scripts
+In React, each component goes through different phases in its life, just as a person can go from being a student to a programmer, to later becoming an programmer. React components go through three phases: Mounting, Updating, and Unmounting.
 
-In the project directory, you can run:
+The first phase, the **Mounting** phase, means that the component is in the process of inserting its content into the DOM.
 
-### `npm start`
+The second, **Updating**, is called when the component is being updated. A component update occurs when there is a change in the state of the component or its props.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The next phase, the last one, is **Unmounting**, which is called when a component needs to be removed from the DOM.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+ You can check a detailed documentation of Hooks on [Reacjs.org](https://reactjs.org/docs/hooks-overview.html)
 
-### `npm test`
+### Below is a complete list of the most useful react hooks with their explanation:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+<details open>
+<summary><strong>State Hook</strong></summary>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This hook is to setup a State to our functional component 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+useState() is a function that internally creates a variable where we can store the state of our component. It accepts an initial value and returns an array with two elements, the value and the function to modify it.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Since the value returned by the function is an array, we can break it down to access its elements individually.
 
-### `npm run eject`
+`const [counter, setCounter] = useState(0);`
+</details>
+<details>
+<summary><strong>Effect Hook</strong></summary>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+It is the functional equivalent of **componentDidMount**, **componentDidUpdate**, and **componentWillUnmount** in class components.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The call to useEffect accepts a function as an argument. This function is executed by default when the component is first rendered, and then every time the component is rendered.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+useEffect(()=>{
+    console.log(counter)
+});
+```
+It is also possible to specify when this function should be executed with an optional second argument that we can pass to it.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+To do this, simply add a second parameter to the function, with the list of elements on which it depends, in this case the counter. If the value of the counter changes, the function will be executed with the next render. You can set multiple parameters to execute the useEffect hook
 
-## Learn More
+```
+useEffect(()=>{
+    console.log(counter)
+}, [counter]);
+```
+Another possibility that this hook allows us is to specify that it be executed only once. This is very useful if we just want to make an API call to fill in the state of the application.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+To do that only  add empty parameter array, this would tell React that our effect doesn't depend on any values, and therefore should only run on mount and unmount of our component.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+If you're still thinking about classes, this means that our hook would become a **componentDidMount** and a **componentWillUnmount**.
 
-### Code Splitting
+```
+useEffect(()=>{
+    async function fetchCars(){
+        const resp = await fetch(carsApiUrl);
+        const cars = await res.json();
+        setCars(cars)
+    }
+    fetchCars();
+}, []);
+```
+The hook comes with a cleanup function, which you might not always need, but it can come in handy.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+To invoke the cleanup function you can simply add a return function like so
 
-### Analyzing the Bundle Size
+```
+useEffect(() => {
+  let timer = setTimeout(() => setShow(true), 3000);
+  return () => {
+    clearTimeout(timer);
+  };
+}, []);
+```
+This will create a timeout in memory, so it would be best to clean this up.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+The cleanup can prevent memory leaks and remove unwanted things. Some use-cases for this are:
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Clean up subscriptions
+- Clean up modals
+- Remove event listeners
+- Clear timeouts
+</details>
